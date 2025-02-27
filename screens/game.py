@@ -98,7 +98,15 @@ class BreakoutGame(Widget):
         if self.ball.pos[1] <= self.paddle.pos[1] + self.paddle.size[1] and \
            self.paddle.pos[0] <= self.ball.pos[0] <= self.paddle.pos[0] + self.paddle.size[0]:
             self.dy *= -1    
-                
+        # ตรวจสอบการชนกับบล็อก
+        for block in self.blocks[:]:
+            if block.pos[0] <= self.ball.pos[0] <= block.pos[0] + block.size[0] and \
+               block.pos[1] <= self.ball.pos[1] <= block.pos[1] + block.size[1]:
+                self.blocks.remove(block)
+                self.canvas.remove(block)
+                self.dy *= -1
+                self.score += 10
+                  
     def end_game(self):
         """เกมจบ (แพ้)"""
         print(f"Game Over! Your Score: {self.score}")
