@@ -3,6 +3,8 @@ from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from utils.config import get_difficulty  # ใช้ค่าจาก config
+from kivy.uix.screenmanager import Screen
+from kivy.uix.widget import Widget
 
 class GameScreen(Screen):
     def __init__(self, **kwargs):
