@@ -54,3 +54,8 @@ class BreakoutGame(Widget):
         self.score = 0
         self.running = False
         self.setup_game()
+
+    def end_game(self):
+        """เกมจบ (แพ้)"""
+        print(f"Game Over! Your Score: {self.score}")
+
