@@ -31,3 +31,16 @@ class GameScreen(Screen):
     def go_to_menu(self, instance):
         """กลับไปหน้าเมนู"""
         self.manager.current = "menu"
+
+class GameScreen(Screen):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.game_widget = BreakoutGame()
+        self.add_widget(self.game_widget)
+
+    def on_pre_enter(self, *args):
+        """อัปเดตค่าตามโหมดที่เลือกเมื่อเข้าหน้าเกม"""
+        self.game_widget.start_game()
+
+
+
