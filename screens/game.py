@@ -58,4 +58,11 @@ class BreakoutGame(Widget):
     def end_game(self):
         """เกมจบ (แพ้)"""
         print(f"Game Over! Your Score: {self.score}")
+    
+    def on_touch_move(self, touch):
+        """ควบคุมไม้ตี"""
+    new_x = touch.x - self.paddle.size[0] / 2
+    new_x = max(0, min(Window.width - self.paddle.size[0], new_x))  # ไม่ให้เลยขอบจอ
+    self.paddle.pos = (new_x, self.paddle.pos[1])
+
 
