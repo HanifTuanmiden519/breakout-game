@@ -5,6 +5,10 @@ from kivy.uix.button import Button
 from utils.config import get_difficulty  # ใช้ค่าจาก config
 from kivy.uix.screenmanager import Screen
 from kivy.uix.widget import Widget
+from kivy.graphics import Rectangle, Ellipse, Color
+from kivy.clock import Clock
+from kivy.core.window import Window
+from utils.config import get_difficulty
 
 class GameScreen(Screen):
     def __init__(self, **kwargs):
@@ -54,6 +58,45 @@ class BreakoutGame(Widget):
         self.score = 0
         self.running = False
         self.setup_game()
+        
+    def setup_game(self):
+        self.canvas.clear()
+    # กำหนดค่าความยาก
+    difficulty = get_difficulty()
+    settings = {
+        "easy": {"speed": 2, "paddle_size": 150, "lives": 5},
+        "medium": {"speed": 4, "paddle_size": 120, "lives": 3},
+        "hard": {"speed": 6, "paddle_size": 100, "lives": 2}
+    }[difficulty]
+    
+    self.dx = settings["speed"]
+    self.dy = settings["speed"]
+    self.lives = settings["lives"]
+    
+    with self.canvas:
+        # วาดพื้นหลัง
+        Color(0, 0, 0)
+        Rectangle(size=Window.size)
+        
+        # วาดไม้ตี
+        Color(0, 1, 0)
+        self.paddle = Rectangle(
+            size=(settings["paddle_size"], 20),
+            pos=(Window.width / 2 - settings["paddle_size"] / 2, 50)
+        )
+        
+        # วาดลูกบอล
+        Color(1, 0, 0)
+        self.ball = Ellipse(size=(20, 20), pos=(Window.width / 2, Window.height / 2))
+        
+        # วาดบล็อก
+        self.blocks = []
+        Color(0, 0, 1)
+        
+        rows = 5
+        cols = 7
+        block_width = Window.width / cols
+        block_height = 30
 
     def end_game(self):
         """เกมจบ (แพ้)"""
@@ -64,5 +107,4 @@ class BreakoutGame(Widget):
     new_x = touch.x - self.paddle.size[0] / 2
     new_x = max(0, min(Window.width - self.paddle.size[0], new_x))  # ไม่ให้เลยขอบจอ
     self.paddle.pos = (new_x, self.paddle.pos[1])
-
 
