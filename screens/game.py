@@ -73,7 +73,11 @@ class BreakoutGame(Widget):
                     self.blocks.append(block)
 
         self.running = True
-
+    def start_game(self):
+        """เริ่มเกมใหม่"""
+        self.setup_game()
+        Clock.schedule_interval(self.update, 1 / 60)
+        
     def end_game(self):
         """เกมจบ (แพ้)"""
         print(f"Game Over! Your Score: {self.score}")
