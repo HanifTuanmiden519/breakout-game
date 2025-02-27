@@ -106,7 +106,17 @@ class BreakoutGame(Widget):
                 self.canvas.remove(block)
                 self.dy *= -1
                 self.score += 10
-                  
+        # ถ้าลูกบอลตกพื้น
+        if self.ball.pos[1] <= 0:
+            self.lives -= 1
+            if self.lives > 0:
+                self.ball.pos = (Window.width / 2, Window.height / 2)
+                self.dy *= -1
+            else:
+                self.running = False
+                Clock.unschedule(self.update)
+                self.end_game()
+                
     def end_game(self):
         """เกมจบ (แพ้)"""
         print(f"Game Over! Your Score: {self.score}")
