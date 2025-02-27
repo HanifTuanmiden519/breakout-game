@@ -42,5 +42,15 @@ class GameScreen(Screen):
         """อัปเดตค่าตามโหมดที่เลือกเมื่อเข้าหน้าเกม"""
         self.game_widget.start_game()
 
-
-
+class BreakoutGame(Widget):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.ball = None
+        self.paddle = None
+        self.blocks = []
+        self.dx = 4  # ทิศทางการเคลื่อนที่แนวนอนของลูกบอล
+        self.dy = 4  # ทิศทางการเคลื่อนที่แนวตั้งของลูกบอล
+        self.lives = 3
+        self.score = 0
+        self.running = False
+        self.setup_game()
