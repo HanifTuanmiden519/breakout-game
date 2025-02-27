@@ -78,6 +78,22 @@ class BreakoutGame(Widget):
         self.setup_game()
         Clock.schedule_interval(self.update, 1 / 60)
         
+    def update(self, dt):
+        """อัปเดตการเคลื่อนที่ของลูกบอล"""
+        if not self.running:
+            return
+
+        # อัปเดตตำแหน่งลูกบอล
+        self.ball.pos = (self.ball.pos[0] + self.dx, self.ball.pos[1] + self.dy)
+
+        # ขอบจอซ้าย-ขวา
+        if self.ball.pos[0] <= 0 or self.ball.pos[0] + self.ball.size[0] >= Window.width:
+            self.dx *= -1
+
+        # ขอบจอบน
+        if self.ball.pos[1] + self.ball.size[1] >= Window.height:
+            self.dy *= -1
+                
     def end_game(self):
         """เกมจบ (แพ้)"""
         print(f"Game Over! Your Score: {self.score}")
