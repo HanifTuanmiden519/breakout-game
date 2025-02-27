@@ -93,6 +93,11 @@ class BreakoutGame(Widget):
         # ขอบจอบน
         if self.ball.pos[1] + self.ball.size[1] >= Window.height:
             self.dy *= -1
+            
+        # ตรวจสอบการชนกับไม้ตี
+        if self.ball.pos[1] <= self.paddle.pos[1] + self.paddle.size[1] and \
+           self.paddle.pos[0] <= self.ball.pos[0] <= self.paddle.pos[0] + self.paddle.size[0]:
+            self.dy *= -1    
                 
     def end_game(self):
         """เกมจบ (แพ้)"""
