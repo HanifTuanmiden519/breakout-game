@@ -63,9 +63,9 @@ class BreakoutGame(Widget):
         self.canvas.clear()
         difficulty = get_difficulty()
         settings = {
-            "easy": {"speed": 2, "paddle_size": 150, "lives": 5},
-            "medium": {"speed": 4, "paddle_size": 120, "lives": 3},
-            "hard": {"speed": 6, "paddle_size": 100, "lives": 2}
+            "easy": {"speed": 4, "paddle_size": 150, "lives": 5},
+            "medium": {"speed": 6, "paddle_size": 120, "lives": 3},
+            "hard": {"speed": 8, "paddle_size": 100, "lives": 2}
         }[difficulty]
     
         self.dx = settings["speed"]
@@ -163,7 +163,19 @@ class BreakoutGame(Widget):
                 self.end_game()
                 
     def end_game(self):
-        print(f"Game Over! Your Score: {self.score}")
+        self.running = False
+        Clock.unschedule(self.update)
+        
+        self.show_game_over_message()
+    
+    def show_game_over_message(self):
+        game_over_label = Label(text="Game Over. back to menu!", font_size=50, size_hint=(None, None), size=(300, 100),color=(1, 0, 0, 1),
+                                pos=(Window.width / 2 - 150, Window.height / 2))
+        self.add_widget(game_over_label)
+        
+        # รอ 3 วินาทีก่อนกลับไปเมนู
+        Clock.schedule_once(lambda dt: self.game_screen.manager.current == "menu", 3)
+
     
     def on_touch_move(self, touch):
         new_x = touch.x - self.paddle.size[0] / 2
