@@ -16,6 +16,13 @@ class MenuScreen(Screen):
             # วาดสี่เหลี่ยมให้เต็มหน้าจอ
             self.background = Rectangle(pos=self.pos, size=Window.size)
             
+            # อัพเดตขนาดพื้นหลังเมื่อหน้าจอเปลี่ยนขนาด
+        self.bind(pos=self.update_background, size=self.update_background)
+    def update_background(self, *args):
+        # อัพเดตขนาดและตำแหน่งของพื้นหลังเมื่อหน้าจอเปลี่ยนขนาด
+        self.background.pos = self.pos
+        self.background.size = self.size
+
         layout = BoxLayout(orientation='vertical', spacing=10, padding=50)
 
         self.label = Label(text=f"Select Game Mode: {get_difficulty().capitalize()}", font_size=24)
