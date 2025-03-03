@@ -2,11 +2,20 @@ from kivy.uix.screenmanager import Screen
 from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
+from kivy.graphics import Rectangle, Color
+from kivy.core.window import Window
 from utils.config import set_difficulty, get_difficulty
 
 class MenuScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        # เพิ่มพื้นหลัง
+        with self.canvas.before:
+            # ตั้งค่าสีพื้นหลัง (สีเทาอ่อน)
+            Color(0.9, 0.9, 0.9, 1)
+            # วาดสี่เหลี่ยมให้เต็มหน้าจอ
+            self.background = Rectangle(pos=self.pos, size=Window.size)
+            
         layout = BoxLayout(orientation='vertical', spacing=10, padding=50)
 
         self.label = Label(text=f"Select Game Mode: {get_difficulty().capitalize()}", font_size=24)
