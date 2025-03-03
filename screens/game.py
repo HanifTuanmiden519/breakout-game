@@ -223,3 +223,8 @@ class BreakoutGame(Widget):
         new_x = self.paddle.pos[0] - 20  
         new_x = max(new_x, 0)
         self.paddle.pos = (new_x, self.paddle.pos[1])
+
+    def move_paddle_right(self):
+        new_x = self.paddle.pos[0] + 20 
+        new_x = min(new_x, Window.width - self.paddle.size[0])
+        self.paddle.pos = (new_x, self.paddle.pos[1])
