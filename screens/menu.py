@@ -11,17 +11,11 @@ class MenuScreen(Screen):
         super().__init__(**kwargs)
         # เพิ่มพื้นหลัง
         with self.canvas.before:
-            # ตั้งค่าสีพื้นหลัง (สีเทาอ่อน)
-            Color(0.9, 0.9, 0.9, 1)
-            # วาดสี่เหลี่ยมให้เต็มหน้าจอ
-            self.background = Rectangle(pos=self.pos, size=Window.size)
+            #พื้นหลังสีและภาพเลือกได้โดยเอา # ออก
+            #Color(0.9, 0.9, 0.9, 1)
+            self.background = Rectangle(source='image/bg start.jpg', pos=self.pos, size=Window.size)
             
-            # อัพเดตขนาดพื้นหลังเมื่อหน้าจอเปลี่ยนขนาด
         self.bind(pos=self.update_background, size=self.update_background)
-    def update_background(self, *args):
-        # อัพเดตขนาดและตำแหน่งของพื้นหลังเมื่อหน้าจอเปลี่ยนขนาด
-        self.background.pos = self.pos
-        self.background.size = self.size
 
         layout = BoxLayout(orientation='vertical', spacing=10, padding=50)
 
@@ -48,6 +42,10 @@ class MenuScreen(Screen):
 
         layout.add_widget(start_btn)
         self.add_widget(layout)
+
+    def update_background(self, *args):
+        self.background.pos = self.pos
+        self.background.size = self.size
 
     def change_difficulty_left(self, instance):
         current_difficulty = get_difficulty()
