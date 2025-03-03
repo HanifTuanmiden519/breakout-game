@@ -59,6 +59,8 @@ class BreakoutGame(Widget):
         
         Window.bind(on_resize=self.update_game_elements)
 
+        Window.bind(on_key_down=self.on_key_down)
+        
     def setup_game(self):
         self.canvas.clear()
         difficulty = get_difficulty()
