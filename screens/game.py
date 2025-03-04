@@ -16,13 +16,19 @@ class GameScreen(Screen):
 
         # UI elements with dynamic positioning
         self.score_label = Label(
-            text="Score: 0", size_hint=(None, None), size=(150, 30)
+            text="Score: 0",
+            size_hint=(None, None), size=(150, 30),
+            pos_hint={"left": 1, "top": 1}
         )
         self.lives_label = Label(
-            text="Lives: 3", size_hint=(None, None), size=(150, 30)
+            text="Lives: 3",
+            size_hint=(None, None), size=(150, 30),
+            pos_hint={"center_x": 0.5, "top": 1}
         )
         self.back_button = Button(
-            text="Back to Menu", size_hint=(None, None), size=(150, 50)
+            text="Back to Menu",
+            size_hint=(None, None), size=(150, 50),
+            pos_hint={"right": 1, "top": 1}
         )
 
         self.back_button.bind(on_press=self.back_to_menu)
@@ -33,6 +39,9 @@ class GameScreen(Screen):
 
         Window.bind(on_resize=self.update_ui_positions)
 
+    
+
+
     def on_pre_enter(self, *args):
         self.game_widget.start_game()
         self.update_labels()
@@ -42,9 +51,10 @@ class GameScreen(Screen):
         self.lives_label.text = f"Lives: {self.game_widget.lives}"
 
     def update_ui_positions(self, instance, width, height):
-        self.score_label.pos = (20, height - 40)
-        self.lives_label.pos = (200, height - 40)
-        self.back_button.pos = (width - 180, height - 50)
+        padding = 10  # ระยะขอบ
+        self.score_label.pos = (padding, height - 40)
+        self.lives_label.pos = (width / 2 - 75, height - 40)
+        self.back_button.pos = (width - 160, height - 50)
 
     def back_to_menu(self, instance):
         self.manager.current = "menu"
