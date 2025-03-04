@@ -19,17 +19,28 @@ class MenuScreen(Screen):
 
         layout = BoxLayout(orientation='vertical', spacing=10, padding=50)
 
-        self.label = Label(text=f"Select Game Mode: {get_difficulty().capitalize()}", font_size=24)
+        self.label = Label(text=f"{get_difficulty().capitalize()}", font_size=24)
         layout.add_widget(self.label)
+        
+        # ปุ่ม 'Start Game'
+        start_btn = Button(text="Start Game", font_size=24, size_hint=(1, 0.2))
+        start_btn.bind(on_press=self.start_game)
 
+        # เพิ่มปุ่มลงใน layout
+        layout.add_widget(start_btn)
+        
         arrows_layout = BoxLayout(size_hint=(1, 0.2))
         
         # ใช้ปุ่ม 'Previous' แทนลูกศรซ้าย
-        prev_btn = Button(text="Previous", size_hint=(0.3, 1))
+        prev_btn = Button(text="Previous", size_hint=(0.3, 1),
+                  background_color=(1, 1, 1, 0.3),  # กำหนดสีเป็นโปร่งใส
+                  background_normal='')
         prev_btn.bind(on_press=self.change_difficulty_left)
 
         # ใช้ปุ่ม 'Next' แทนลูกศรขวา
-        next_btn = Button(text="Next", size_hint=(0.3, 1))
+        next_btn = Button(text="Next", size_hint=(0.3, 1),
+                  background_color=(1, 1, 1, 0.3),  # กำหนดสีเป็นโปร่งใส
+                  background_normal='')
         next_btn.bind(on_press=self.change_difficulty_right)
 
         arrows_layout.add_widget(prev_btn)
@@ -37,10 +48,7 @@ class MenuScreen(Screen):
 
         layout.add_widget(arrows_layout)
 
-        start_btn = Button(text="Start Game", font_size=24, size_hint=(1, 0.2))
-        start_btn.bind(on_press=self.start_game)
-
-        layout.add_widget(start_btn)
+        
         self.add_widget(layout)
 
     def update_background(self, *args):
@@ -71,7 +79,7 @@ class MenuScreen(Screen):
 
     def update_difficulty_label(self):
         difficulty = get_difficulty()
-        self.label.text = f"Select Game Mode: {difficulty.capitalize()}"
+        self.label.text = f" {difficulty.capitalize()}"
 
     def start_game(self, instance):
         self.manager.current = "game"
