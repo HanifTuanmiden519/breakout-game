@@ -19,7 +19,9 @@ class MenuScreen(Screen):
 
         layout = BoxLayout(orientation='vertical', spacing=10, padding=50)
 
-        
+        # สร้าง Label สำหรับแสดงข้อความ 'Breakout Game'
+        title_game = Label(text="Breakout Game", font_size=48)
+        layout.add_widget(title_game)
         
         # ปุ่ม 'Start Game'
         start_btn = Button(text="Start Game", font_size=24, size_hint=(1, 0.2))
