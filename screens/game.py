@@ -72,11 +72,14 @@ class BreakoutGame(Widget):
         self.lives = 3
         self.score = 0
         self.running = False
+        self.moving_left = False
+        self.moving_right = False
+        self.paddle_speed = 8  # ปรับค่า speed ตามต้องการ
         self.setup_game()
 
         Window.bind(on_resize=self.update_game_elements)
-
         Window.bind(on_key_down=self.on_key_down)
+        Window.bind(on_key_up=self.on_key_up)
 
     def setup_game(self):
         self.canvas.clear()
@@ -225,16 +228,27 @@ class BreakoutGame(Widget):
 
     def on_key_down(self, window, key, scancode, codepoint, modifier):
         if codepoint == "a":
-            self.move_paddle_left()
+            self.moving_left = True
         elif codepoint == "d":
-            self.move_paddle_right()
-    
-    def move_paddle_left(self):
-        new_x = self.paddle.pos[0] - 40  
-        new_x = max(new_x, 0)
-        self.paddle.pos = (new_x, self.paddle.pos[1])
+            self.moving_right = True
 
-    def move_paddle_right(self):
-        new_x = self.paddle.pos[0] + 40 
-        new_x = min(new_x, Window.width - self.paddle.size[0])
-        self.paddle.pos = (new_x, self.paddle.pos[1])
+        # เริ่มเลื่อน paddle
+        Clock.unschedule(self.move_paddle)  # ป้องกันการเรียกซ้ำ
+        Clock.schedule_interval(self.move_paddle, 1 / 60)
+
+    def on_key_up(self, window, key, scancode):
+        if key in (ord("a"), ord("d")):  
+            self.moving_left = False
+            self.moving_right = False
+
+        # หยุดการเลื่อน paddle ถ้าไม่ได้กดปุ่มใดอยู่
+        if not self.moving_left and not self.moving_right:
+            Clock.unschedule(self.move_paddle)
+
+    def move_paddle(self, dt):
+        if self.moving_left:
+            new_x = max(self.paddle.pos[0] - self.paddle_speed, 0)
+            self.paddle.pos = (new_x, self.paddle.pos[1])
+        if self.moving_right:
+            new_x = min(self.paddle.pos[0] + self.paddle_speed, Window.width - self.paddle.size[0])
+            self.paddle.pos = (new_x, self.paddle.pos[1])
