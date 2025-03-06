@@ -126,17 +126,18 @@ class BreakoutGame(Widget):
         self.blocks = []
         Color(1, 1, 1)
 
-        rows = 5
-        cols = 7
+        rows = randint(1, 7)  # สุ่มจำนวนแถวระหว่าง 2 ถึง 5
+        cols = 10
         block_width = Window.width / cols
         block_height = 30
         block_start_y = Window.height - 90
 
         for row in range(rows):
-                for col in range(cols):
+            for col in range(cols):
+                if randint(0, 1):  # 50% โอกาสที่จะเว้นช่องว่าง
                     block = Rectangle(
                         size=(block_width - 5, block_height - 5),
-                        pos=(col * block_width, block_start_y - (row * block_height)),
+                        pos=(col * block_width, block_start_y - (row * block_height))
                     )
                     self.blocks.append(block)
 
