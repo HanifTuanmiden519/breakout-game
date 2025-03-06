@@ -6,6 +6,7 @@ from kivy.graphics import Rectangle, Ellipse, Color, Line
 from kivy.clock import Clock
 from kivy.core.window import Window
 from utils.config import get_difficulty
+from random import randint, choice
 
 
 class GameScreen(Screen):
@@ -67,14 +68,15 @@ class BreakoutGame(Widget):
         self.ball = None
         self.paddle = None
         self.blocks = []
-        self.dx = 4
-        self.dy = 4
+        self.dx = 2
+        self.dy = 2
         self.lives = 3
         self.score = 0
         self.running = False
         self.moving_left = False
         self.moving_right = False
-        self.paddle_speed = 8  # ปรับค่า speed ตามต้องการ
+        self.level = 1  # เริ่มที่ Level 1
+        self.paddle_speed = 12  # ปรับค่า speed ตามต้องการ
         self.setup_game()
 
         Window.bind(on_resize=self.update_game_elements)
@@ -84,57 +86,59 @@ class BreakoutGame(Widget):
     def setup_game(self):
         self.canvas.clear()
         difficulty = get_difficulty()
+    
+        # ดึงค่าความยากของโหมดที่เลือก
         settings = {
-            "easy": {"speed": 4, "paddle_size": 150, "lives": 5},
-            "medium": {"speed": 6, "paddle_size": 120, "lives": 3},
-            "hard": {"speed": 8, "paddle_size": 100, "lives": 2},
+        "easy": {"speed": 2, "paddle_size": 150, "lives": 4},
+        "medium": {"speed": 3, "paddle_size": 120, "lives": 3},
+        "hard": {"speed": 4, "paddle_size": 100, "lives": 2},
         }[difficulty]
 
-        self.dx = settings["speed"]
-        self.dy = settings["speed"]
+        # เพิ่มระดับความเร็วและปรับแต่งตาม Level
+        self.dx = settings["speed"] 
+        self.dy = settings["speed"] 
         self.lives = settings["lives"]
 
         with self.canvas:
             Color(0, 0, 0)
             Rectangle(size=Window.size)
 
-            # Line separating UI from game
+            # สร้างเส้นแยก UI
             Color(1, 1, 1)
-            Line(
-                points=[0, Window.height - 60, Window.width, Window.height - 60],
-                width=2,
-            )
+            Line(points=[0, Window.height - 60, Window.width, Window.height - 60], width=2)
 
-            # Paddle (centered horizontally)
+            # สร้าง Paddle
             Color(1, 1, 1)
-            self.paddle = Rectangle(
-                size=(settings["paddle_size"], 20),
-                pos=(Window.width / 2 - settings["paddle_size"] / 2, 50),
-            )
+            self.paddle = Rectangle(size=(settings["paddle_size"], 20), pos=(Window.width / 2 - settings["paddle_size"] / 2, 50))
 
-            # Ball (centered on screen)
+            # สร้าง Ball
             Color(1, 1, 1)
-            self.ball = Ellipse(
-                size=(20, 20), pos=(Window.width / 2, Window.height / 2)
-            )
+            self.ball = Ellipse(size=(20, 20), pos=(Window.width / 2, Window.height / 2))
 
+            # สร้างบล็อกโดยใช้ setup_level()
             self.blocks = []
-            Color(1, 1, 1)
-            rows = 5
-            cols = 7
-            block_width = Window.width / cols
-            block_height = 30
-            block_start_y = Window.height - 90  # Starting below the separator line
+            self.setup_level()
 
-            for row in range(rows):
+
+            self.running = True
+
+    def setup_level(self):
+        self.blocks = []
+        Color(1, 1, 1)
+
+        rows = 5
+        cols = 7
+        block_width = Window.width / cols
+        block_height = 30
+        block_start_y = Window.height - 90
+
+        for row in range(rows):
                 for col in range(cols):
                     block = Rectangle(
                         size=(block_width - 5, block_height - 5),
                         pos=(col * block_width, block_start_y - (row * block_height)),
                     )
                     self.blocks.append(block)
-
-        self.running = True
 
     def update_game_elements(self, instance, width, height):
         # Update paddle position to be centered
@@ -146,8 +150,8 @@ class BreakoutGame(Widget):
         block_height = 30
         block_start_y = height - 90
 
-        for row in range(5):  # 5 rows of blocks
-            for col in range(7):  # 7 columns of blocks
+        for row in range(3):  # 5 rows of blocks
+            for col in range(5):  # 7 columns of blocks
                 block = self.blocks[row * 7 + col]
                 block.pos = (col * block_width, block_start_y - (row * block_height))
 
@@ -161,33 +165,27 @@ class BreakoutGame(Widget):
 
         self.ball.pos = (self.ball.pos[0] + self.dx, self.ball.pos[1] + self.dy)
 
-        if (
-            self.ball.pos[0] <= 0
-            or self.ball.pos[0] + self.ball.size[0] >= Window.width
-        ):
+        if self.ball.pos[0] <= 0 or self.ball.pos[0] + self.ball.size[0] >= Window.width:
             self.dx *= -1
 
         if self.ball.pos[1] + self.ball.size[1] >= Window.height:
             self.dy *= -1
 
-        if (
-            self.ball.pos[1] <= self.paddle.pos[1] + self.paddle.size[1]
-            and self.paddle.pos[0]
-            <= self.ball.pos[0]
-            <= self.paddle.pos[0] + self.paddle.size[0]
-        ):
+        if self.ball.pos[1] <= self.paddle.pos[1] + self.paddle.size[1] and self.paddle.pos[0] <= self.ball.pos[0] <= self.paddle.pos[0] + self.paddle.size[0]:
             self.dy *= -1
 
+        # ตรวจสอบการชนกับบล็อก
         for block in self.blocks[:]:
-            if (
-                block.pos[0] <= self.ball.pos[0] <= block.pos[0] + block.size[0]
-                and block.pos[1] <= self.ball.pos[1] <= block.pos[1] + block.size[1]
-            ):
+            if block.pos[0] <= self.ball.pos[0] <= block.pos[0] + block.size[0] and block.pos[1] <= self.ball.pos[1] <= block.pos[1] + block.size[1]:
                 self.blocks.remove(block)
                 self.canvas.remove(block)
                 self.dy *= -1
                 self.score += 10
                 self.game_screen.update_labels()
+
+        # ถ้าทำลายบล็อกทั้งหมด เปลี่ยนด่าน
+        if not self.blocks:
+            self.next_level()
 
         if self.ball.pos[1] <= 0:
             self.lives -= 1
@@ -219,6 +217,16 @@ class BreakoutGame(Widget):
 
         # รอ 3 วินาทีก่อนกลับไปเมนู
         Clock.schedule_once(lambda dt: self.game_screen.manager.current == "menu", 3)
+        
+    def next_level(self):
+        self.level += 1  # เพิ่มระดับ
+
+        # เพิ่มความเร็วของลูกบอลทีละน้อย แต่ไม่ให้เร็วเกินไป
+        self.dx *= 1.1
+        self.dy *= 1.1
+        self.setup_game()  # รีเซ็ตเกมใหม่
+        self.start_game()  # เริ่มเกมใหม่
+
 
     def on_touch_move(self, touch):
         new_x = touch.x - self.paddle.size[0] / 2
