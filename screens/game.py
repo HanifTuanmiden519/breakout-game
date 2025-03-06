@@ -124,17 +124,21 @@ class BreakoutGame(Widget):
 
     def setup_level(self):
         self.blocks = []
-        Color(1, 1, 1)
+        block_color = (1, 0, 0)  # สีแดง (สามารถเปลี่ยนเป็นสีอื่นได้ตามต้องการ)
 
-        rows = randint(1, 7)  # สุ่มจำนวนแถวระหว่าง 2 ถึง 5
+        rows = randint(3, 5)  # สุ่มจำนวนแถวระหว่าง 3 ถึง 5
         cols = 10
         block_width = Window.width / cols
         block_height = 30
         block_start_y = Window.height - 90
 
         for row in range(rows):
-            for col in range(cols):
-                if randint(0, 1):  # 50% โอกาสที่จะเว้นช่องว่าง
+            num_blocks = rows - row  # จำนวนบล็อกในแถวนี้ลดลงทีละหนึ่ง
+            start_col = (cols - num_blocks) // 2  # จัดบล็อกให้อยู่กลางหน้าจอ
+
+            for col in range(start_col, start_col + num_blocks):
+                with self.canvas:
+                    Color(*block_color)  # ใช้สีเดียวสำหรับทุกบล็อก
                     block = Rectangle(
                         size=(block_width - 5, block_height - 5),
                         pos=(col * block_width, block_start_y - (row * block_height))
