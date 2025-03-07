@@ -225,6 +225,11 @@ class BreakoutGame(Widget):
         
     def next_level(self):
         self.level += 1  # เพิ่มระดับ
+        if self.level > 3:  # จำกัดไว้ที่ 3 ด่าน
+            self.running = False
+            Clock.unschedule(self.update)
+            self.show_game_over_message()
+            return
 
         # เพิ่มความเร็วของลูกบอลทีละน้อย แต่ไม่ให้เร็วเกินไป
         self.dx *= 1.1
