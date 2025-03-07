@@ -130,6 +130,10 @@ class BreakoutGame(Widget):
             cols = 2
             rows = 2
 
+        elif self.level == 2:
+            cols = 3
+            rows = 3
+
         block_width = Window.width / cols
         block_height = 30
         block_start_y = Window.height - 90
@@ -152,6 +156,11 @@ class BreakoutGame(Widget):
         if self.level == 1:
             cols = 2
             rows = 2
+
+        elif self.level == 2:
+            cols = 3
+            rows = 3
+            
         # Adjust block grid based on the new window size
        
         block_width = width / cols  # Adjust based on number of columns
