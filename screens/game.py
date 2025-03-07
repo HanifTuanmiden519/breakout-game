@@ -125,25 +125,23 @@ class BreakoutGame(Widget):
     def setup_level(self):
         self.blocks = []
         block_color = (1, 0, 0)  # สีแดง (สามารถเปลี่ยนเป็นสีอื่นได้ตามต้องการ)
+        
+        cols = 2  # ค่าเริ่มต้น 
+        rows = 2  # ค่าเริ่มต้น 
 
-        rows = randint(3, 5)  # สุ่มจำนวนแถวระหว่าง 3 ถึง 5
-        cols = 10
         block_width = Window.width / cols
         block_height = 30
         block_start_y = Window.height - 90
 
         for row in range(rows):
-            num_blocks = rows - row  # จำนวนบล็อกในแถวนี้ลดลงทีละหนึ่ง
-            start_col = (cols - num_blocks) // 2  # จัดบล็อกให้อยู่กลางหน้าจอ
-
-            for col in range(start_col, start_col + num_blocks):
-                with self.canvas:
-                    Color(*block_color)  # ใช้สีเดียวสำหรับทุกบล็อก
-                    block = Rectangle(
-                        size=(block_width - 5, block_height - 5),
-                        pos=(col * block_width, block_start_y - (row * block_height))
-                    )
-                    self.blocks.append(block)
+         for col in range(cols):
+            with self.canvas:
+                Color(*block_color)
+                block = Rectangle(
+                    size=(block_width - 5, block_height - 5),
+                    pos=(col * block_width, block_start_y - (row * block_height))
+                )
+                self.blocks.append(block)
 
     def update_game_elements(self, instance, width, height):
         # Update paddle position to be centered
