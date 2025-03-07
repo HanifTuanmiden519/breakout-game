@@ -220,10 +220,14 @@ class BreakoutGame(Widget):
             if block_rect.pos[0] <= self.ball.pos[0] <= block_rect.pos[0] + block_rect.size[0] and block_rect.pos[1] <= self.ball.pos[1] <= block_rect.pos[1] + block_rect.size[1]:
                 block["hit_points"] -= 1  # ลดพลังชีวิต
                 if block["hit_points"] <= 0:
+                    if self.break_sound:
+                        self.break_sound.play()  # เล่นเสียงเมื่อบล็อกถูกทำลาย
                     self.blocks.remove(block)
                     self.canvas.remove(block_rect)
                     self.score += 10
                 else:
+                    if self.hit_sound:
+                        self.hit_sound.play()
                     self.update_block_color(block)  # อัปเดตสีตาม hit_points
                 self.dy *= -1
                 self.game_screen.update_labels()
