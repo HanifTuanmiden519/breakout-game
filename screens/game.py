@@ -7,6 +7,7 @@ from kivy.clock import Clock
 from kivy.core.window import Window
 from utils.config import get_difficulty
 from random import randint, choice
+from kivy.core.audio import SoundLoader
 
 
 class GameScreen(Screen):
