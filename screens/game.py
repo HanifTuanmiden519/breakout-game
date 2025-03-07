@@ -40,9 +40,6 @@ class GameScreen(Screen):
 
         Window.bind(on_resize=self.update_ui_positions)
 
-    
-
-
     def on_pre_enter(self, *args):
         self.game_widget.start_game()
         self.update_labels()
@@ -89,9 +86,9 @@ class BreakoutGame(Widget):
     
         # ดึงค่าความยากของโหมดที่เลือก
         settings = {
-        "easy": {"speed": 2, "paddle_size": 150, "lives": 4},
-        "medium": {"speed": 3, "paddle_size": 120, "lives": 3},
-        "hard": {"speed": 4, "paddle_size": 100, "lives": 2},
+            "easy": {"speed": 2, "paddle_size": 150, "lives": 4},
+            "medium": {"speed": 3, "paddle_size": 120, "lives": 3},
+            "hard": {"speed": 4, "paddle_size": 100, "lives": 2},
         }[difficulty]
 
         # เพิ่มระดับความเร็วและปรับแต่งตาม Level
@@ -119,21 +116,18 @@ class BreakoutGame(Widget):
             self.blocks = []
             self.setup_level()
 
-
             self.running = True
 
     def setup_level(self):
         self.blocks = []
-        block_color = (1, 0, 0)  # สีแดง (สามารถเปลี่ยนเป็นสีอื่นได้ตามต้องการ)
+        block_color = (1, 0, 0, 1)  # สีแดง (RGBA)
         
         if self.level == 1:  # Level 1: 2 columns x 2 rows
             cols = 2
             rows = 2
-
-        elif self.level == 2: # Level 2: 3 columns x 3 rows
+        elif self.level == 2:  # Level 2: 3 columns x 3 rows
             cols = 3
             rows = 3
-
         elif self.level == 3:  # Level 3: 4 columns x 4 rows
             cols = 4
             rows = 4
@@ -143,40 +137,33 @@ class BreakoutGame(Widget):
         block_start_y = Window.height - 90
 
         for row in range(rows):
-        # กำหนด hit_points โดยแถวบนสุด (row 0) มี 3 HP และลดลงตามลำดับ
+            # กำหนด hit_points โดยแถวบนสุด (row 0) มี 3 HP และลดลงตามลำดับ
             hit_points = max(1, 3 - row)  # เริ่มที่ 3 และลดลง 1 ต่อแถว แต่ไม่ต่ำกว่า 1
             for col in range(cols):
                 with self.canvas:
-                    Color(*block_color)
+                    color = Color(*block_color)  # สร้าง Color object
                     block = Rectangle(
                         size=(block_width - 5, block_height - 5),
                         pos=(col * block_width, block_start_y - (row * block_height))
-                )
+                    )
                     block_data = {
                         "rectangle": block,
-                        "hit_points": hit_points  # กำหนดพลังชีวิตตามแถว
-                }
+                        "hit_points": hit_points,  # กำหนดพลังชีวิตตามแถว
+                        "color": color             # เก็บ Color object
+                    }
                     self.blocks.append(block_data)
                     self.update_block_color(block_data)  # อัปเดตสีตาม hit_points
 
     def update_block_color(self, block):
         hit_points = block["hit_points"]
-        # ลบ Color เดิมจาก canvas ก่อนอัปเดตสีใหม่ (ถ้ามี)
-        for instr in self.canvas.instructions:
-            if isinstance(instr, Color) and instr.rgba == (1, 0, 0, 1):  # ตรวจสอบ Color เดิม (แดงเริ่มต้น)
-                self.canvas.remove(instr)
-                break
-    # กำหนดสีใหม่ตาม hit_points
+        color = block["color"]  # ใช้ Color object ที่เก็บไว้
+        # อัปเดตสีตาม hit_points
         if hit_points == 3:
-            color = (1, 0, 0, 1)  # สีแดง
+            color.rgba = (1, 0, 0, 1)  # สีแดง
         elif hit_points == 2:
-            color = (0, 0, 1, 1)  # สีฟ้า
+            color.rgba = (0, 0, 1, 1)  # สีฟ้า
         else:  # hit_points == 1
-            color = (1, 1, 0, 1)  # สีเหลือง
-        with self.canvas:
-            Color(*color)
-            block["rectangle"].source = None  # ล้าง source เพื่อให้ใช้สีใหม่
-
+            color.rgba = (1, 1, 0, 1)  # สีเหลือง
 
     def update_game_elements(self, instance, width, height):
         # Update paddle position to be centered
@@ -186,11 +173,9 @@ class BreakoutGame(Widget):
         if self.level == 1:
             cols = 2
             rows = 2
-
         elif self.level == 2:
             cols = 3
             rows = 3
-
         elif self.level == 3:
             cols = 4
             rows = 4
@@ -227,12 +212,18 @@ class BreakoutGame(Widget):
 
         # ตรวจสอบการชนกับบล็อก
         for block in self.blocks[:]:
-            if block.pos[0] <= self.ball.pos[0] <= block.pos[0] + block.size[0] and block.pos[1] <= self.ball.pos[1] <= block.pos[1] + block.size[1]:
-                self.blocks.remove(block)
-                self.canvas.remove(block)
+            block_rect = block["rectangle"]
+            if block_rect.pos[0] <= self.ball.pos[0] <= block_rect.pos[0] + block_rect.size[0] and block_rect.pos[1] <= self.ball.pos[1] <= block_rect.pos[1] + block_rect.size[1]:
+                block["hit_points"] -= 1  # ลดพลังชีวิต
+                if block["hit_points"] <= 0:
+                    self.blocks.remove(block)
+                    self.canvas.remove(block_rect)
+                    self.score += 10
+                else:
+                    self.update_block_color(block)  # อัปเดตสีตาม hit_points
                 self.dy *= -1
-                self.score += 10
                 self.game_screen.update_labels()
+                break  # หยุดการตรวจสอบเมื่อชนบล็อกหนึ่งเพื่อป้องกันการชนซ้ำ
 
         # ถ้าทำลายบล็อกทั้งหมด เปลี่ยนด่าน
         if not self.blocks:
@@ -283,12 +274,10 @@ class BreakoutGame(Widget):
         self.setup_game()  # รีเซ็ตเกมใหม่
         self.start_game()  # เริ่มเกมใหม่
 
-
     def on_touch_move(self, touch):
         new_x = touch.x - self.paddle.size[0] / 2
         new_x = max(0, min(Window.width - self.paddle.size[0], new_x))
         self.paddle.pos = (new_x, self.paddle.pos[1])
-
 
     def on_key_down(self, window, key, scancode, codepoint, modifier):
         if codepoint == "a":
