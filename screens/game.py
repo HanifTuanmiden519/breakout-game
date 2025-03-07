@@ -126,8 +126,9 @@ class BreakoutGame(Widget):
         self.blocks = []
         block_color = (1, 0, 0)  # สีแดง (สามารถเปลี่ยนเป็นสีอื่นได้ตามต้องการ)
         
-        cols = 2  # ค่าเริ่มต้น 
-        rows = 2  # ค่าเริ่มต้น 
+        if self.level == 1:  # Level 1: 2 columns x 2 rows
+            cols = 2
+            rows = 2
 
         block_width = Window.width / cols
         block_height = 30
@@ -147,16 +148,22 @@ class BreakoutGame(Widget):
         # Update paddle position to be centered
         paddle_size = self.paddle.size[0]  # Keep original paddle size
         self.paddle.pos = (width / 2 - paddle_size / 2, self.paddle.pos[1])
-
+        
+        if self.level == 1:
+            cols = 2
+            rows = 2
         # Adjust block grid based on the new window size
-        block_width = width / 7  # Adjust based on number of columns
+       
+        block_width = width / cols  # Adjust based on number of columns
         block_height = 30
         block_start_y = height - 90
 
-        for row in range(3):  # 5 rows of blocks
-            for col in range(5):  # 7 columns of blocks
-                block = self.blocks[row * 7 + col]
-                block.pos = (col * block_width, block_start_y - (row * block_height))
+        index = 0
+        for row in range(rows):
+            for col in range(cols):
+                if index < len(self.blocks):
+                    self.blocks[index].pos = (col * block_width, block_start_y - (row * block_height))
+                    index += 1
 
     def start_game(self):
         self.setup_game()
