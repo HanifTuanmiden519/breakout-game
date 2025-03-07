@@ -143,14 +143,20 @@ class BreakoutGame(Widget):
         block_start_y = Window.height - 90
 
         for row in range(rows):
-         for col in range(cols):
-            with self.canvas:
-                Color(*block_color)
-                block = Rectangle(
-                    size=(block_width - 5, block_height - 5),
-                    pos=(col * block_width, block_start_y - (row * block_height))
+        # กำหนด hit_points โดยแถวบนสุด (row 0) มี 3 HP และลดลงตามลำดับ
+            hit_points = max(1, 3 - row)  # เริ่มที่ 3 และลดลง 1 ต่อแถว แต่ไม่ต่ำกว่า 1
+            for col in range(cols):
+                with self.canvas:
+                    Color(*block_color)
+                    block = Rectangle(
+                        size=(block_width - 5, block_height - 5),
+                        pos=(col * block_width, block_start_y - (row * block_height))
                 )
-                self.blocks.append(block)
+                # เก็บบล็อกเป็น dictionary ที่มีทั้ง rectangle และ hit_points
+                    self.blocks.append({
+                        "rectangle": block,
+                        "hit_points": hit_points  # กำหนดพลังชีวิตตามแถว
+                })
 
     def update_game_elements(self, instance, width, height):
         # Update paddle position to be centered
@@ -168,10 +174,8 @@ class BreakoutGame(Widget):
         elif self.level == 3:
             cols = 4
             rows = 4
-
-        # Adjust block grid based on the new window size
        
-        block_width = width / cols  # Adjust based on number of columns
+        block_width = width / cols  
         block_height = 30
         block_start_y = height - 90
 
@@ -179,7 +183,7 @@ class BreakoutGame(Widget):
         for row in range(rows):
             for col in range(cols):
                 if index < len(self.blocks):
-                    self.blocks[index].pos = (col * block_width, block_start_y - (row * block_height))
+                    self.blocks[index]["rectangle"].pos = (col * block_width, block_start_y - (row * block_height))
                     index += 1
 
     def start_game(self):
