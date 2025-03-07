@@ -152,11 +152,31 @@ class BreakoutGame(Widget):
                         size=(block_width - 5, block_height - 5),
                         pos=(col * block_width, block_start_y - (row * block_height))
                 )
-                # เก็บบล็อกเป็น dictionary ที่มีทั้ง rectangle และ hit_points
-                    self.blocks.append({
+                    block_data = {
                         "rectangle": block,
                         "hit_points": hit_points  # กำหนดพลังชีวิตตามแถว
-                })
+                }
+                    self.blocks.append(block_data)
+                    self.update_block_color(block_data)  # อัปเดตสีตาม hit_points
+
+    def update_block_color(self, block):
+        hit_points = block["hit_points"]
+        # ลบ Color เดิมจาก canvas ก่อนอัปเดตสีใหม่ (ถ้ามี)
+        for instr in self.canvas.instructions:
+            if isinstance(instr, Color) and instr.rgba == (1, 0, 0, 1):  # ตรวจสอบ Color เดิม (แดงเริ่มต้น)
+                self.canvas.remove(instr)
+                break
+    # กำหนดสีใหม่ตาม hit_points
+        if hit_points == 3:
+            color = (1, 0, 0, 1)  # สีแดง
+        elif hit_points == 2:
+            color = (0, 0, 1, 1)  # สีฟ้า
+        else:  # hit_points == 1
+            color = (1, 1, 0, 1)  # สีเหลือง
+        with self.canvas:
+            Color(*color)
+            block["rectangle"].source = None  # ล้าง source เพื่อให้ใช้สีใหม่
+
 
     def update_game_elements(self, instance, width, height):
         # Update paddle position to be centered
