@@ -76,6 +76,9 @@ class BreakoutGame(Widget):
         self.level = 1  # เริ่มที่ Level 1
         self.paddle_speed = 12  # ปรับค่า speed ตามต้องการ
         self.setup_game()
+        # โหลดไฟล์เสียง
+        self.hit_sound = SoundLoader.load('screens/hit.wav')  # เสียงเมื่อชนบล็อก
+        self.break_sound = SoundLoader.load('screens/break.wav')  # เสียงเมื่อบล็อกถูกทำลาย
 
         Window.bind(on_resize=self.update_game_elements)
         Window.bind(on_key_down=self.on_key_down)
