@@ -386,6 +386,14 @@ class BreakoutGame(Widget):
             new_x = min(self.paddle.pos[0] + self.paddle_speed, Window.width - self.paddle.size[0])
             self.paddle.pos = (new_x, self.paddle.pos[1])
             
-      
+    def apply_powerup(self, effect):
+        if effect == "expand_paddle":
+            new_width = min(self.paddle.size[0] + 50, Window.width)  # ขยายแพดเดิล
+            self.paddle.size = (new_width, self.paddle.size[1])
+        elif effect == "extra_ball":
+            self.create_extra_ball()
+        elif effect == "speed_up":
+            self.dx *= 1.2  # เพิ่มความเร็วลูกบอล
+            self.dy *= 1.2  
     
     
