@@ -10,8 +10,16 @@ from random import randint, choice
 from kivy.core.audio import SoundLoader
 from kivy.uix.popup import Popup
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.image import Image
 
+class PowerUp:
+    def __init__(self, x, y, effect):
+        self.effect = effect  # พลังพิเศษ (ขยายแพดเดิล, เพิ่มลูกบอล, เพิ่มความเร็ว)
+        self.image = Image(source="assets/image/powerups.jpg", size=(30, 30), pos=(x, y))
+        self.falling_speed = 3  # ความเร็วตก
 
+    def move_down(self):
+        self.image.pos = (self.image.pos[0], self.image.pos[1] - self.falling_speed)
 class GameScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -78,6 +86,7 @@ class BreakoutGame(Widget):
         self.moving_right = False
         self.level = 1  # เริ่มที่ Level 1
         self.paddle_speed = 12  # ปรับค่า speed ตามต้องการ
+        self.powerups = []  # เก็บไอเทมที่กำลังตกลงมา
         self.setup_game()
 
         # โหลดไฟล์เสียง
@@ -258,6 +267,8 @@ class BreakoutGame(Widget):
 
         if self.ball.pos[1] <= self.paddle.pos[1] + self.paddle.size[1] and self.paddle.pos[0] <= self.ball.pos[0] <= self.paddle.pos[0] + self.paddle.size[0]:
             self.dy *= -1
+        
+        
 
         # ตรวจสอบการชนกับบล็อก
         for block in self.blocks[:]:
@@ -270,6 +281,8 @@ class BreakoutGame(Widget):
                     self.blocks.remove(block)
                     self.canvas.remove(block_rect)
                     self.score += 10
+                    
+                    
                 else:
                     if self.hit_sound:
                         self.hit_sound.play()
@@ -360,3 +373,7 @@ class BreakoutGame(Widget):
         if self.moving_right:
             new_x = min(self.paddle.pos[0] + self.paddle_speed, Window.width - self.paddle.size[0])
             self.paddle.pos = (new_x, self.paddle.pos[1])
+            
+      
+    
+    
