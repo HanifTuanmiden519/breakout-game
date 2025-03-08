@@ -396,4 +396,9 @@ class BreakoutGame(Widget):
             self.dx *= 1.2  # เพิ่มความเร็วลูกบอล
             self.dy *= 1.2  
     
+    def create_extra_ball(self):
+        new_ball = Ellipse(size=(20, 20), pos=self.ball.pos)
+        self.canvas.add(Color(1, 1, 1))
+        self.canvas.add(new_ball)
+        self.extra_balls.append({"ball": new_ball, "dx": self.dx, "dy": self.dy})
     
