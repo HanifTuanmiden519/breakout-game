@@ -8,6 +8,8 @@ from kivy.core.window import Window
 from utils.config import get_difficulty
 from random import randint, choice
 from kivy.core.audio import SoundLoader
+from kivy.uix.popup import Popup
+from kivy.uix.boxlayout import BoxLayout
 
 
 class GameScreen(Screen):
@@ -205,9 +207,42 @@ class BreakoutGame(Widget):
         self.paused = not self.paused  # สลับสถานะ Pause
         if self.paused:
             print("Game Paused")
+            self.show_pause_popup()
         else:
             print("Game Resumed")
+            if hasattr(self, "pause_popup"):
+                self.pause_popup.dismiss()
 
+    def show_pause_popup(self):
+        layout = BoxLayout(orientation="vertical", spacing=10, padding=10)
+
+        resume_button = Button(text="Resume", size_hint=(1, 0.5))
+        exit_button = Button(text="Exit to Menu", size_hint=(1, 0.5))
+
+        resume_button.bind(on_press=self.resume_game)
+        exit_button.bind(on_press=self.exit_to_menu)
+
+        layout.add_widget(resume_button)
+        layout.add_widget(exit_button)
+
+        self.pause_popup = Popup(
+            title="Game Paused",
+            content=layout,
+            size_hint=(None, None),
+            size=(300, 200),
+            auto_dismiss=False
+        )
+
+        self.pause_popup.open()
+        
+    def resume_game(self, instance):
+        self.toggle_pause()  # ปิด Pause และปิด Popup
+
+    def exit_to_menu(self, instance):
+        self.pause_popup.dismiss()
+        self.running = False
+        Clock.unschedule(self.update)
+        self.game_screen.manager.current = "menu"
 
     def update(self, dt):
         if not self.running or self.paused:  # หยุดอัปเดตหาก paused
