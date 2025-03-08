@@ -16,7 +16,7 @@ class PowerUp:
     def __init__(self, x, y, effect):
         self.effect = effect  # พลังพิเศษ (ขยายแพดเดิล, เพิ่มลูกบอล, เพิ่มความเร็ว)
         self.image = Image(source="assets/image/powerups.jpg", size=(30, 30), pos=(x, y))
-        self.falling_speed = 3  # ความเร็วตก
+        self.falling_speed = 1  # ความเร็วตก
 
     def move_down(self):
         self.image.pos = (self.image.pos[0], self.image.pos[1] - self.falling_speed)
@@ -87,6 +87,7 @@ class BreakoutGame(Widget):
         self.level = 1  # เริ่มที่ Level 1
         self.paddle_speed = 12  # ปรับค่า speed ตามต้องการ
         self.powerups = []  # เก็บไอเทมที่กำลังตกลงมา
+        self.extra_balls = []  # 🏀 เพิ่มตัวแปรสำหรับเก็บลูกบอลเสริม
         self.setup_game()
 
         # โหลดไฟล์เสียง
@@ -277,7 +278,11 @@ class BreakoutGame(Widget):
                 self.apply_powerup(powerup.effect)  # ใช้พลังพิเศษ
                 self.remove_widget(powerup.image)
                 self.powerups.remove(powerup)
-
+                
+         # อัปเดตบอลเสริมทั้งหมด
+        for extra in self.extra_balls:
+            extra["ball"].pos = (extra["ball"].pos[0] + extra["dx"], extra["ball"].pos[1] + extra["dy"])
+            
         # ตรวจสอบการชนกับบล็อก
         for block in self.blocks[:]:
             block_rect = block["rectangle"]
@@ -401,4 +406,3 @@ class BreakoutGame(Widget):
         self.canvas.add(Color(1, 1, 1))
         self.canvas.add(new_ball)
         self.extra_balls.append({"ball": new_ball, "dx": self.dx, "dy": self.dy})
-    
