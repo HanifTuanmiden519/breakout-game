@@ -268,7 +268,15 @@ class BreakoutGame(Widget):
         if self.ball.pos[1] <= self.paddle.pos[1] + self.paddle.size[1] and self.paddle.pos[0] <= self.ball.pos[0] <= self.paddle.pos[0] + self.paddle.size[0]:
             self.dy *= -1
         
-        
+        for powerup in self.powerups[:]:  
+            powerup.move_down()
+
+                # เช็คว่าผู้เล่นรับไอเทมหรือยัง
+            if self.paddle.pos[0] < powerup.image.pos[0] < self.paddle.pos[0] + self.paddle.size[0] and \
+                self.paddle.pos[1] < powerup.image.pos[1] < self.paddle.pos[1] + self.paddle.size[1]:
+                self.apply_powerup(powerup.effect)  # ใช้พลังพิเศษ
+                self.remove_widget(powerup.image)
+                self.powerups.remove(powerup)
 
         # ตรวจสอบการชนกับบล็อก
         for block in self.blocks[:]:
