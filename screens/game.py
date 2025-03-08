@@ -71,11 +71,13 @@ class BreakoutGame(Widget):
         self.lives = 3
         self.score = 0
         self.running = False
+        self.paused = False  # ✅ เพิ่มตัวแปร paused ที่นี่
         self.moving_left = False
         self.moving_right = False
         self.level = 1  # เริ่มที่ Level 1
         self.paddle_speed = 12  # ปรับค่า speed ตามต้องการ
         self.setup_game()
+
         # โหลดไฟล์เสียง
         self.hit_sound = SoundLoader.load('screens/hit.wav')  # เสียงเมื่อชนบล็อก
         self.break_sound = SoundLoader.load('screens/break.wav')  # เสียงเมื่อบล็อกถูกทำลาย
@@ -198,9 +200,17 @@ class BreakoutGame(Widget):
     def start_game(self):
         self.setup_game()
         Clock.schedule_interval(self.update, 1 / 60)
+    
+    def toggle_pause(self):
+        self.paused = not self.paused  # สลับสถานะ Pause
+        if self.paused:
+            print("Game Paused")
+        else:
+            print("Game Resumed")
+
 
     def update(self, dt):
-        if not self.running:
+        if not self.running or self.paused:  # หยุดอัปเดตหาก paused
             return
 
         self.ball.pos = (self.ball.pos[0] + self.dx, self.ball.pos[1] + self.dy)
@@ -292,10 +302,12 @@ class BreakoutGame(Widget):
             self.moving_left = True
         elif codepoint == "d":
             self.moving_right = True
+        elif codepoint == "p":  # กด 'P' เพื่อ Pause/Resume
+            self.toggle_pause()
 
-        # เริ่มเลื่อน paddle
-        Clock.unschedule(self.move_paddle)  # ป้องกันการเรียกซ้ำ
+        Clock.unschedule(self.move_paddle)
         Clock.schedule_interval(self.move_paddle, 1 / 60)
+
 
     def on_key_up(self, window, key, scancode):
         if key in (ord("a"), ord("d")):  
