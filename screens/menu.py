@@ -13,7 +13,7 @@ class MenuScreen(Screen):
         with self.canvas.before:
             #พื้นหลังสีและภาพเลือกได้โดยเอา # ออก
             #Color(0.9, 0.9, 0.9, 1)
-            self.background = Rectangle(source='image/bg start.jpg', pos=self.pos, size=Window.size)
+            self.background = Rectangle(source='assets/image/bg start.jpg', pos=self.pos, size=Window.size)
             
         self.bind(pos=self.update_background, size=self.update_background)
 

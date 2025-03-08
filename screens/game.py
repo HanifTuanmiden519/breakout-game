@@ -81,8 +81,8 @@ class BreakoutGame(Widget):
         self.setup_game()
 
         # โหลดไฟล์เสียง
-        self.hit_sound = SoundLoader.load('screens/hit.wav')  # เสียงเมื่อชนบล็อก
-        self.break_sound = SoundLoader.load('screens/break.wav')  # เสียงเมื่อบล็อกถูกทำลาย
+        self.hit_sound = SoundLoader.load('assets/sounds/hit.wav')  # เสียงเมื่อชนบล็อก
+        self.break_sound = SoundLoader.load('assets/sounds/break.wav')  # เสียงเมื่อบล็อกถูกทำลาย
 
         Window.bind(on_resize=self.update_game_elements)
         Window.bind(on_key_down=self.on_key_down)
