@@ -76,8 +76,8 @@ class BreakoutGame(Widget):
         self.ball = None
         self.paddle = None
         self.blocks = []
-        self.dx = 2
-        self.dy = 2
+        self.dx = 0.5
+        self.dy = 0.5
         self.lives = 3
         self.score = 0
         self.running = False
@@ -141,13 +141,13 @@ class BreakoutGame(Widget):
         block_color = (1, 0, 0, 1)  # สีแดง (RGBA)
         
         if self.level == 1:  # Level 1: 2 columns x 2 rows
-            cols = 2
+            cols = 7
             rows = 2
         elif self.level == 2:  # Level 2: 3 columns x 3 rows
-            cols = 3
+            cols = 7
             rows = 3
         elif self.level == 3:  # Level 3: 4 columns x 4 rows
-            cols = 4
+            cols = 7
             rows = 4
 
         block_width = Window.width / cols
@@ -189,13 +189,13 @@ class BreakoutGame(Widget):
         self.paddle.pos = (width / 2 - paddle_size / 2, self.paddle.pos[1])
         
         if self.level == 1:
-            cols = 2
+            cols = 7
             rows = 2
         elif self.level == 2:
-            cols = 3
+            cols = 7
             rows = 3
         elif self.level == 3:
-            cols = 4
+            cols = 7
             rows = 4
        
         block_width = width / cols  
@@ -352,8 +352,8 @@ class BreakoutGame(Widget):
             return
 
         # เพิ่มความเร็วของลูกบอลทีละน้อย แต่ไม่ให้เร็วเกินไป
-        self.dx *= 1.1
-        self.dy *= 1.1
+        self.dx *= 0.5
+        self.dy *= 0.5
         self.setup_game()  # รีเซ็ตเกมใหม่
         self.start_game()  # เริ่มเกมใหม่
 
@@ -393,13 +393,15 @@ class BreakoutGame(Widget):
             
     def apply_powerup(self, effect):
         if effect == "expand_paddle":
-            new_width = min(self.paddle.size[0] + 50, Window.width)  # ขยายแพดเดิล
-            self.paddle.size = (new_width, self.paddle.size[1])
+            self.paddle.size = (self.paddle.size[0] * 1.5, self.paddle.size[1])  # ขยาย Paddle
+            self.paddle_color = Color(0, 1, 0, 1)  # เปลี่ยนเป็นสีเขียว
+            self.canvas.add(self.paddle_color)
+            self.canvas.add(self.paddle)
         elif effect == "extra_ball":
             self.create_extra_ball()
         elif effect == "speed_up":
-            self.dx *= 1.2  # เพิ่มความเร็วลูกบอล
-            self.dy *= 1.2  
+            self.dx *= 0.2  # เพิ่มความเร็วลูกบอล
+            self.dy *= 0.2  
     
     def create_extra_ball(self):
         new_ball = Ellipse(size=(20, 20), pos=self.ball.pos)
