@@ -384,10 +384,12 @@ class BreakoutGame(Widget):
         restart_button = Button(
             text="Restart Game", 
             size_hint=(1, 0.35),
+            background_color=(0, 0.7, 0, 1)
         )
         menu_button = Button(
             text="Back to Menu", 
             size_hint=(1, 0.35),
+            background_color=(0.7, 0, 0, 1)
         )
 
         restart_button.bind(on_press=self.restart_game)
