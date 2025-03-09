@@ -507,6 +507,9 @@ class BreakoutGame(Widget):
         elif effect == "multi_ball":
             for _ in range(3):
                 self.create_extra_ball()
+        elif effect == "shield":
+            self.shield_active = True
+            Clock.schedule_once(lambda dt: setattr(self, 'shield_active', False), 10)
 
     def reset_speed(self, dt):
         # คืนความเร็วเมื่อ Power-up "slow_down" หมดเวลา 
