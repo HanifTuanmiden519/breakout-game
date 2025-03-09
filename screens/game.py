@@ -159,7 +159,7 @@ class BreakoutGame(Widget):
         if self.ball.pos[1] + self.ball.size[1] >= Window.height:
             self.dy *= -1
         if (self.ball.pos[1] <= self.paddle.pos[1] + self.paddle.size[1] and 
-            self.paddle.pos[0] <= self.ball.pos[0] <= self.paddle.pos[0] + self.paddle.size[0]):
+            self.paddle.pos[0] <= self.ball.pos[0] + self.ball.size[0] / 2 <= self.paddle.pos[0] + self.paddle.size[0]):
             self.dy = abs(self.dy)
 
         for powerup in self.powerups[:]:
@@ -177,7 +177,7 @@ class BreakoutGame(Widget):
             if extra["ball"].pos[1] + extra["ball"].size[1] >= Window.height:
                 extra["dy"] *= -1
             if (extra["ball"].pos[1] <= self.paddle.pos[1] + self.paddle.size[1] and 
-                self.paddle.pos[0] <= extra["ball"].pos[0] <= self.paddle.pos[0] + self.paddle.size[0]):
+                self.paddle.pos[0] <= extra["ball"].pos[0] + extra["ball"].size[0] / 2 <= self.paddle.pos[0] + self.paddle.size[0]):
                 extra["dy"] = abs(extra["dy"])
             if extra["ball"].pos[1] <= 0:
                 if extra["ball"] in self.canvas.children:
