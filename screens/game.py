@@ -369,7 +369,37 @@ class BreakoutGame(Widget):
     def end_game(self):
         self.running = False
         Clock.unschedule(self.update)
-        self.show_game_over_message()
+        self.show_game_over_popup()
+
+    def show_game_over_popup(self):
+        layout = BoxLayout(orientation="vertical", spacing=10, padding=10)
+
+        restart_button = Button(text="Restart", size_hint=(1, 0.5))
+        menu_button = Button(text="Main Menu", size_hint=(1, 0.5))
+
+        restart_button.bind(on_press=self.restart_game)
+        menu_button.bind(on_press=self.exit_to_menu)
+
+        layout.add_widget(restart_button)
+        layout.add_widget(menu_button)
+
+        self.game_over_popup = Popup(
+            title="Game Over",
+            content=layout,
+            size_hint=(None, None),
+            size=(300, 200),
+            auto_dismiss=False
+        )
+
+        self.game_over_popup.open()
+
+    def restart_game(self, instance):
+        self.game_over_popup.dismiss()
+        self.level = 1
+        self.score = 0
+        self.lives = 3
+        self.setup_game()
+        self.start_game()
 
     def show_game_over_message(self):
         game_over_label = Label(
