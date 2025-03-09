@@ -400,8 +400,29 @@ class BreakoutGame(Widget):
         elif effect == "extra_ball":
             self.create_extra_ball()
         elif effect == "speed_up":
-            self.dx *= 0.2  # เพิ่มความเร็วลูกบอล
-            self.dy *= 0.2  
+            self.dx *= 1.2  # แก้จาก 0.2 เป็น 1.2 เพื่อให้เร็วขึ้นจริง
+            self.dy *= 1.2
+            for extra in self.extra_balls:  # อัปเดตความเร็วลูกบอลเสริมด้วย
+                extra["dx"] *= 1.2
+                extra["dy"] *= 1.2
+        elif effect == "slow_down":  # เพิ่มเงื่อนไขใหม่
+            # บันทึกความเร็วเดิม
+            if not hasattr(self, "original_dx"):
+                self.original_dx = self.dx
+                self.original_dy = self.dy
+                self.original_extra_speeds = [(extra["dx"], extra["dy"]) for extra in self.extra_balls]
+        
+            # ลดความเร็วลูกบอลหลัก
+            self.dx *= 0.5
+            self.dy *= 0.5
+            
+            # ลดความเร็วลูกบอลเสริม
+            for extra in self.extra_balls:
+                extra["dx"] *= 0.5
+                extra["dy"] *= 0.5
+        
+            # ตั้งเวลาให้กลับสู่ความเร็วปกติหลัง 5 วินาที
+            Clock.schedule_once(self.reset_speed, 5)
     
     def create_extra_ball(self):
         new_ball = Ellipse(size=(20, 20), pos=self.ball.pos)
