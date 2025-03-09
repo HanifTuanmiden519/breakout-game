@@ -6,7 +6,7 @@ from kivy.graphics import Rectangle, Ellipse, Color, Line
 from kivy.clock import Clock
 from kivy.core.window import Window
 from utils.config import get_difficulty
-from random import randint, choice
+from random import randint, choice, uniform  
 from kivy.core.audio import SoundLoader
 from kivy.uix.popup import Popup
 from kivy.uix.boxlayout import BoxLayout
@@ -20,6 +20,7 @@ class PowerUp:
 
     def move_down(self):
         self.image.pos = (self.image.pos[0], self.image.pos[1] - self.falling_speed)
+
 class GameScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -68,7 +69,6 @@ class GameScreen(Screen):
     def back_to_menu(self, instance):
         self.manager.current = "menu"
 
-
 class BreakoutGame(Widget):
     def __init__(self, game_screen, **kwargs):
         super().__init__(**kwargs)
@@ -81,13 +81,13 @@ class BreakoutGame(Widget):
         self.lives = 3
         self.score = 0
         self.running = False
-        self.paused = False  # ✅ เพิ่มตัวแปร paused ที่นี่
+        self.paused = False  #  เพิ่มตัวแปร paused ที่นี่
         self.moving_left = False
         self.moving_right = False
         self.level = 1  # เริ่มที่ Level 1
         self.paddle_speed = 12  # ปรับค่า speed ตามต้องการ
         self.powerups = []  # เก็บไอเทมที่กำลังตกลงมา
-        self.extra_balls = []  # 🏀 เพิ่มตัวแปรสำหรับเก็บลูกบอลเสริม
+        self.extra_balls = []  #  เพิ่มตัวแปรสำหรับเก็บลูกบอลเสริม
         self.setup_game()
 
         # โหลดไฟล์เสียง
@@ -110,8 +110,8 @@ class BreakoutGame(Widget):
         }[difficulty]
 
         # เพิ่มระดับความเร็วและปรับแต่งตาม Level
-        self.dx = settings["speed"] 
-        self.dy = settings["speed"] 
+        self.dx = settings["speed"]
+        self.dy = settings["speed"]
         self.lives = settings["lives"]
 
         with self.canvas:
@@ -198,7 +198,7 @@ class BreakoutGame(Widget):
             cols = 7
             rows = 4
        
-        block_width = width / cols  
+        block_width = width / cols
         block_height = 30
         block_start_y = height - 90
 
@@ -258,35 +258,51 @@ class BreakoutGame(Widget):
         if not self.running or self.paused:  # หยุดอัปเดตหาก paused
             return
 
+        # อัปเดตตำแหน่งลูกบอลหลัก (New)
         self.ball.pos = (self.ball.pos[0] + self.dx, self.ball.pos[1] + self.dy)
 
+        # ตรวจสอบการเด้งของลูกบอลหลักกับขอบจอ 
         if self.ball.pos[0] <= 0 or self.ball.pos[0] + self.ball.size[0] >= Window.width:
             self.dx *= -1
-
         if self.ball.pos[1] + self.ball.size[1] >= Window.height:
             self.dy *= -1
+        # ตรวจสอบการเด้งกับ Paddle และทำให้เด้งขึ้นเท่านั้น 
+        if (self.ball.pos[1] <= self.paddle.pos[1] + self.paddle.size[1] and 
+            self.paddle.pos[0] <= self.ball.pos[0] <= self.paddle.pos[0] + self.paddle.size[0]):
+            self.dy = abs(self.dy)  # เด้งขึ้นเท่านั้น 
 
-        if self.ball.pos[1] <= self.paddle.pos[1] + self.paddle.size[1] and self.paddle.pos[0] <= self.ball.pos[0] <= self.paddle.pos[0] + self.paddle.size[0]:
-            self.dy *= -1
-        
-        for powerup in self.powerups[:]:  
+        # อัปเดตตำแหน่ง Power-up และตรวจสอบการเก็บ 
+        for powerup in self.powerups[:]:
             powerup.move_down()
-
-                # เช็คว่าผู้เล่นรับไอเทมหรือยัง
-            if self.paddle.pos[0] < powerup.image.pos[0] < self.paddle.pos[0] + self.paddle.size[0] and \
-                self.paddle.pos[1] < powerup.image.pos[1] < self.paddle.pos[1] + self.paddle.size[1]:
+            # เช็คว่าผู้เล่นรับไอเทมหรือยัง
+            if (self.paddle.pos[0] < powerup.image.pos[0] < self.paddle.pos[0] + self.paddle.size[0] and 
+                self.paddle.pos[1] < powerup.image.pos[1] < self.paddle.pos[1] + self.paddle.size[1]):
                 self.apply_powerup(powerup.effect)  # ใช้พลังพิเศษ
                 self.remove_widget(powerup.image)
                 self.powerups.remove(powerup)
-                
-         # อัปเดตบอลเสริมทั้งหมด
-        for extra in self.extra_balls:
+
+        # อัปเดตบอลเสริมทั้งหมด
+        for extra in self.extra_balls[:]:  # ใช้ [:] เพื่อป้องกันการแก้ไขลิสต์ขณะวนลูป 
             extra["ball"].pos = (extra["ball"].pos[0] + extra["dx"], extra["ball"].pos[1] + extra["dy"])
-            
+            # การเด้งที่ขอบจอสำหรับลูกบอลเสริม 
+            if extra["ball"].pos[0] <= 0 or extra["ball"].pos[0] + extra["ball"].size[0] >= Window.width:
+                extra["dx"] *= -1
+            if extra["ball"].pos[1] + extra["ball"].size[1] >= Window.height:
+                extra["dy"] *= -1
+            # เด้งกับ Paddle สำหรับลูกบอลเสริม 
+            if (extra["ball"].pos[1] <= self.paddle.pos[1] + self.paddle.size[1] and 
+                self.paddle.pos[0] <= extra["ball"].pos[0] <= self.paddle.pos[0] + self.paddle.size[0]):
+                extra["dy"] = abs(extra["dy"])  # เด้งขึ้นเท่านั้น 
+            # ตรวจสอบการตกหล่นของลูกบอลเสริมและลบออก 
+            if extra["ball"].pos[1] <= 0:
+                self.canvas.remove(extra["ball"])
+                self.extra_balls.remove(extra)
+
         # ตรวจสอบการชนกับบล็อก
         for block in self.blocks[:]:
             block_rect = block["rectangle"]
-            if block_rect.pos[0] <= self.ball.pos[0] <= block_rect.pos[0] + block_rect.size[0] and block_rect.pos[1] <= self.ball.pos[1] <= block_rect.pos[1] + block_rect.size[1]:
+            if (block_rect.pos[0] <= self.ball.pos[0] <= block_rect.pos[0] + block_rect.size[0] and 
+                block_rect.pos[1] <= self.ball.pos[1] <= block_rect.pos[1] + block_rect.size[1]):
                 block["hit_points"] -= 1  # ลดพลังชีวิต
                 if block["hit_points"] <= 0:
                     if self.break_sound:
@@ -294,10 +310,10 @@ class BreakoutGame(Widget):
                     self.blocks.remove(block)
                     self.canvas.remove(block_rect)
                     self.score += 10
-                    
                     # 🔥 สุ่มโอกาสดรอปไอเทม 30%
                     if randint(1, 100) <= 30:
-                        powerup = PowerUp(block_rect.pos[0], block_rect.pos[1], choice(["expand_paddle", "extra_ball", "speed_up", "slow_down"]))  # เพิ่ม "slow_down"
+                        powerup = PowerUp(block_rect.pos[0], block_rect.pos[1], 
+                                        choice(["expand_paddle", "extra_ball", "speed_up", "slow_down"]))  # เพิ่ม "slow_down" 
                         self.add_widget(powerup.image)
                         self.powerups.append(powerup)
                 else:
@@ -308,16 +324,43 @@ class BreakoutGame(Widget):
                 self.game_screen.update_labels()
                 break  # หยุดการตรวจสอบเมื่อชนบล็อกหนึ่งเพื่อป้องกันการชนซ้ำ
 
+        # ตรวจสอบการชนบล็อกสำหรับลูกบอลเสริม 
+        for extra in self.extra_balls[:]:
+            for block in self.blocks[:]:
+                block_rect = block["rectangle"]
+                if (block_rect.pos[0] <= extra["ball"].pos[0] <= block_rect.pos[0] + block_rect.size[0] and 
+                    block_rect.pos[1] <= extra["ball"].pos[1] <= block_rect.pos[1] + block_rect.size[1]):
+                    block["hit_points"] -= 1
+                    if block["hit_points"] <= 0:
+                        if self.break_sound:
+                            self.break_sound.play()  # เล่นเสียงเมื่อบล็อกถูกทำลาย 
+                        self.blocks.remove(block)
+                        self.canvas.remove(block_rect)
+                        self.score += 10
+                        if randint(1, 100) <= 30:
+                            powerup = PowerUp(block_rect.pos[0], block_rect.pos[1], 
+                                            choice(["expand_paddle", "extra_ball", "speed_up", "slow_down"]))  # เพิ่ม "slow_down" 
+                            self.add_widget(powerup.image)
+                            self.powerups.append(powerup)
+                    else:
+                        if self.hit_sound:
+                            self.hit_sound.play()
+                        self.update_block_color(block)
+                    extra["dy"] *= -1
+                    self.game_screen.update_labels()
+                    break  # หยุดการตรวจสอบเมื่อชนบล็อกหนึ่ง 
+
         # ถ้าทำลายบล็อกทั้งหมด เปลี่ยนด่าน
         if not self.blocks:
             self.next_level()
 
-        if self.ball.pos[1] <= 0:
+        # ตรวจสอบการตกหล่นของลูกบอลหลัก และลด lives เฉพาะเมื่อลูกบอลทั้งหมดหายไป
+        if self.ball.pos[1] <= 0 and not self.extra_balls:  # ถ้าลูกบอลหลักตกและไม่มีลูกบอลเสริม 
             self.lives -= 1
             self.game_screen.update_labels()
             if self.lives > 0:
                 self.ball.pos = (Window.width / 2, Window.height / 2)
-                self.dy *= -1
+                self.dy = abs(self.dy)  # รีเซ็ตทิศทางขึ้น 
             else:
                 self.running = False
                 Clock.unschedule(self.update)
@@ -326,7 +369,6 @@ class BreakoutGame(Widget):
     def end_game(self):
         self.running = False
         Clock.unschedule(self.update)
-
         self.show_game_over_message()
 
     def show_game_over_message(self):
@@ -339,7 +381,6 @@ class BreakoutGame(Widget):
             pos=(Window.width / 2 - 150, Window.height / 2),
         )
         self.add_widget(game_over_label)
-
         # รอ 3 วินาทีก่อนกลับไปเมนู
         Clock.schedule_once(lambda dt: self.game_screen.manager.current == "menu", 3)
         
@@ -350,7 +391,6 @@ class BreakoutGame(Widget):
             Clock.unschedule(self.update)
             self.show_game_over_message()
             return
-
         # เพิ่มความเร็วของลูกบอลทีละน้อย แต่ไม่ให้เร็วเกินไป
         self.dx *= 0.5
         self.dy *= 0.5
@@ -369,16 +409,13 @@ class BreakoutGame(Widget):
             self.moving_right = True
         elif codepoint == "p":  # กด 'P' เพื่อ Pause/Resume
             self.toggle_pause()
-
         Clock.unschedule(self.move_paddle)
         Clock.schedule_interval(self.move_paddle, 1 / 60)
 
-
     def on_key_up(self, window, key, scancode):
-        if key in (ord("a"), ord("d")):  
+        if key in (ord("a"), ord("d")):
             self.moving_left = False
             self.moving_right = False
-
         # หยุดการเลื่อน paddle ถ้าไม่ได้กดปุ่มใดอยู่
         if not self.moving_left and not self.moving_right:
             Clock.unschedule(self.move_paddle)
@@ -390,7 +427,7 @@ class BreakoutGame(Widget):
         if self.moving_right:
             new_x = min(self.paddle.pos[0] + self.paddle_speed, Window.width - self.paddle.size[0])
             self.paddle.pos = (new_x, self.paddle.pos[1])
-            
+
     def apply_powerup(self, effect):
         if effect == "expand_paddle":
             self.paddle.size = (self.paddle.size[0] * 1.5, self.paddle.size[1])  # ขยาย Paddle
@@ -400,48 +437,47 @@ class BreakoutGame(Widget):
         elif effect == "extra_ball":
             self.create_extra_ball()
         elif effect == "speed_up":
-            self.dx *= 1.2  # แก้จาก 0.2 เป็น 1.2 เพื่อให้เร็วขึ้นจริง
+            self.dx *= 1.2  # แก้จาก 0.2 เป็น 1.2 เพื่อให้เร็วขึ้นจริง 
             self.dy *= 1.2
-            for extra in self.extra_balls:  # อัปเดตความเร็วลูกบอลเสริมด้วย
+            for extra in self.extra_balls:  # อัปเดตความเร็วลูกบอลเสริมด้วย 
                 extra["dx"] *= 1.2
                 extra["dy"] *= 1.2
         elif effect == "slow_down":  # เพิ่มเงื่อนไขใหม่
-            # บันทึกความเร็วเดิม
+            # บันทึกความเร็วเดิม 
             if not hasattr(self, "original_dx"):
                 self.original_dx = self.dx
                 self.original_dy = self.dy
                 self.original_extra_speeds = [(extra["dx"], extra["dy"]) for extra in self.extra_balls]
-        
-            # ลดความเร็วลูกบอลหลัก
+            # ลดความเร็วลูกบอลหลัก 
             self.dx *= 0.5
             self.dy *= 0.5
-            
-            # ลดความเร็วลูกบอลเสริม
+            # ลดความเร็วลูกบอลเสริม 
             for extra in self.extra_balls:
                 extra["dx"] *= 0.5
                 extra["dy"] *= 0.5
-        
-            # ตั้งเวลาให้กลับสู่ความเร็วปกติหลัง 5 วินาที
+            # ตั้งเวลาให้กลับสู่ความเร็วปกติหลัง 5 วินาที 
             Clock.schedule_once(self.reset_speed, 5)
 
     def reset_speed(self, dt):
+        # คืนความเร็วเมื่อ Power-up "slow_down" หมดเวลา 
         if hasattr(self, "original_dx"):
-            # คืนค่าความเร็วลูกบอลหลัก
+            # คืนค่าความเร็วลูกบอลหลัก 
             self.dx = self.original_dx
             self.dy = self.original_dy
-        
-            # คืนค่าความเร็วลูกบอลเสริม
+            # คืนค่าความเร็วลูกบอลเสริม 
             for i, extra in enumerate(self.extra_balls):
                 if i < len(self.original_extra_speeds):
                     extra["dx"], extra["dy"] = self.original_extra_speeds[i]
-        
-            # ลบตัวแปรที่เก็บค่าความเร็วเดิม
+            # ลบตัวแปรที่เก็บค่าความเร็วเดิม 
             del self.original_dx
             del self.original_dy
             del self.original_extra_speeds
-    
+
     def create_extra_ball(self):
         new_ball = Ellipse(size=(20, 20), pos=self.ball.pos)
         self.canvas.add(Color(1, 1, 1))
         self.canvas.add(new_ball)
-        self.extra_balls.append({"ball": new_ball, "dx": self.dx, "dy": self.dy})
+        # ใช้ความเร็วปกติถ้ามีการใช้ "slow_down" และสุ่มทิศทางเล็กน้อย 
+        dx = (self.original_dx if hasattr(self, "original_dx") else self.dx) * choice([-1, 1]) * uniform(0.8, 1.2)
+        dy = abs(self.original_dy if hasattr(self, "original_dy") else self.dy)
+        self.extra_balls.append({"ball": new_ball, "dx": dx, "dy": dy})
