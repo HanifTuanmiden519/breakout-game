@@ -95,6 +95,7 @@ class BreakoutGame(Widget):
         self.paddle_speed = 12  # ปรับค่า speed ตามต้องการ
         self.powerups = []  # เก็บไอเทมที่กำลังตกลงมา
         self.extra_balls = []  # 🏀 เพิ่มตัวแปรสำหรับเก็บลูกบอลเสริม
+        self.game_started = False  # Add this line
         self.setup_game()
 
         # โหลดไฟล์เสียง
@@ -262,7 +263,7 @@ class BreakoutGame(Widget):
         self.game_screen.manager.current = "menu"
 
     def update(self, dt):
-        if not self.running or self.paused:  # หยุดอัปเดตหาก paused
+        if not self.running or self.paused or not self.game_started:  # Check if the game has started
             return
 
         # อัปเดตตำแหน่งลูกบอลหลัก 
@@ -489,3 +490,8 @@ class BreakoutGame(Widget):
         dx = (self.original_dx if hasattr(self, "original_dx") else self.dx) * choice([-1, 1]) * uniform(0.8, 1.2)
         dy = abs(self.original_dy if hasattr(self, "original_dy") else self.dy)
         self.extra_balls.append({"ball": new_ball, "dx": dx, "dy": dy})
+
+    def on_touch_down(self, touch):
+        if not self.game_started:
+            self.game_started = True  # Start the game on first touch
+        return super().on_touch_down(touch)
