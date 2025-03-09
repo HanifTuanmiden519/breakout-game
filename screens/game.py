@@ -534,3 +534,13 @@ class BreakoutGame(Widget):
         dx = (self.original_dx if hasattr(self, "original_dx") else self.dx) * choice([-1, 1]) * uniform(0.8, 1.2)
         dy = abs(self.original_dy if hasattr(self, "original_dy") else self.dy)
         self.extra_balls.append({"ball": new_ball, "dx": dx, "dy": dy})
+
+    def setup_time_trial(self):
+        self.time_remaining = 180  # 3 minutes
+        Clock.schedule_interval(self.update_timer, 1)
+
+    def update_timer(self, dt):
+        if self.time_remaining > 0:
+            self.time_remaining -= 1
+        else:
+            self.end_game()
