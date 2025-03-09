@@ -12,6 +12,13 @@ from kivy.uix.popup import Popup
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.image import Image
 
+# Set fixed window size and disable resizing
+screen_width = 800
+screen_height = 600
+Window.size = (screen_width, screen_height)
+Window.resizable = False
+Window.set_title('Breakout')
+
 class PowerUp:
     def __init__(self, x, y, effect):
         self.effect = effect  # พลังพิเศษ (ขยายแพดเดิล, เพิ่มลูกบอล, เพิ่มความเร็ว)
