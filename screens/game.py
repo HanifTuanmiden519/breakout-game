@@ -126,9 +126,9 @@ class BreakoutGame(Widget):
             Color(1, 1, 1)
             self.paddle = Rectangle(size=(settings["paddle_size"], 20), pos=(Window.width / 2 - settings["paddle_size"] / 2, 50))
 
-            # สร้าง Ball
+            # สร้าง Ball บน Paddle
             Color(1, 1, 1)
-            self.ball = Ellipse(size=(20, 20), pos=(Window.width / 2, Window.height / 2))
+            self.ball = Ellipse(size=(20, 20), pos=(self.paddle.pos[0] + self.paddle.size[0] / 2 - 10, self.paddle.pos[1] + 20))
 
             # สร้างบล็อกโดยใช้ setup_level()
             self.blocks = []
@@ -360,7 +360,7 @@ class BreakoutGame(Widget):
             self.lives -= 1
             self.game_screen.update_labels()
             if self.lives > 0:
-                self.ball.pos = (Window.width / 2, Window.height / 2)
+                self.ball.pos = (self.paddle.pos[0] + self.paddle.size[0] / 2 - 10, self.paddle.pos[1] + 20)
                 self.dy = abs(self.dy)  # รีเซ็ตทิศทางขึ้น 
             else:
                 self.running = False
