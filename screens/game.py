@@ -404,9 +404,9 @@ class BreakoutGame(Widget):
         self.paddle.pos = (new_x, self.paddle.pos[1])
 
     def on_key_down(self, window, key, scancode, codepoint, modifier):
-        if codepoint == "a":
+        if codepoint == "a" or key == 276:  # Left arrow key
             self.moving_left = True
-        elif codepoint == "d":
+        elif codepoint == "d" or key == 275:  # Right arrow key
             self.moving_right = True
         elif codepoint == "p":  # กด 'P' เพื่อ Pause/Resume
             self.toggle_pause()
@@ -414,7 +414,7 @@ class BreakoutGame(Widget):
         Clock.schedule_interval(self.move_paddle, 1 / 60)
 
     def on_key_up(self, window, key, scancode):
-        if key in (ord("a"), ord("d")):
+        if key in (ord("a"), ord("d"), 276, 275):  # Left and right arrow keys
             self.moving_left = False
             self.moving_right = False
         # หยุดการเลื่อน paddle ถ้าไม่ได้กดปุ่มใดอยู่
