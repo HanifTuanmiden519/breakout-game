@@ -504,6 +504,9 @@ class BreakoutGame(Widget):
                 extra["dy"] *= 0.5
             # ตั้งเวลาให้กลับสู่ความเร็วปกติหลัง 5 วินาที 
             Clock.schedule_once(self.reset_speed, 5)
+        elif effect == "multi_ball":
+            for _ in range(3):
+                self.create_extra_ball()
 
     def reset_speed(self, dt):
         # คืนความเร็วเมื่อ Power-up "slow_down" หมดเวลา 
