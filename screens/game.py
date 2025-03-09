@@ -361,10 +361,11 @@ class BreakoutGame(Widget):
         self.toggle_pause()  # ปิด Pause และปิด Popup
 
     def exit_to_menu(self, instance):
-        self.pause_popup.dismiss()
+        if hasattr(self, 'game_over_popup'):
+            self.game_over_popup.dismiss()
         self.running = False
         Clock.unschedule(self.update)
-        self.game_screen.manager.current = "menu"
+        self.game_screen.manager.current = "menu"  # Switch to menu screen
 
     def end_game(self):
         self.running = False
@@ -373,9 +374,21 @@ class BreakoutGame(Widget):
 
     def show_game_over_popup(self):
         layout = BoxLayout(orientation="vertical", spacing=10, padding=10)
-
-        restart_button = Button(text="Restart", size_hint=(1, 0.5))
-        menu_button = Button(text="Main Menu", size_hint=(1, 0.5))
+        
+        # Create a label to show final score
+        score_label = Label(
+            text=f"Final Score: {self.score}",
+            size_hint=(1, 0.3)
+        )
+        
+        restart_button = Button(
+            text="Restart Game", 
+            size_hint=(1, 0.35),
+        )
+        menu_button = Button(
+            text="Back to Menu", 
+            size_hint=(1, 0.35),
+        )
 
         restart_button.bind(on_press=self.restart_game)
         menu_button.bind(on_press=self.exit_to_menu)
@@ -387,7 +400,7 @@ class BreakoutGame(Widget):
             title="Game Over",
             content=layout,
             size_hint=(None, None),
-            size=(300, 200),
+            size=(400, 300),
             auto_dismiss=False
         )
 
@@ -399,7 +412,6 @@ class BreakoutGame(Widget):
         self.score = 0
         self.lives = 3
         self.setup_game()
-        self.start_game()
 
     def show_game_over_message(self):
         game_over_label = Label(
