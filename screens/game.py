@@ -34,6 +34,13 @@ class GameScreen(Screen):
         self.game_widget = BreakoutGame(self)
         self.add_widget(self.game_widget)
 
+        # Add timer label
+        self.timer_label = Label(
+            text="Time: 3:00",
+            size_hint=(None, None), size=(150, 30),
+            pos_hint={"right": 0.8, "top": 1}
+        )
+
         # UI elements with dynamic positioning
         self.score_label = Label(
             text="Score: 0",
@@ -56,6 +63,7 @@ class GameScreen(Screen):
         self.add_widget(self.score_label)
         self.add_widget(self.lives_label)
         self.add_widget(self.back_button)
+        self.add_widget(self.timer_label)
 
         Window.bind(on_resize=self.update_ui_positions)
 
