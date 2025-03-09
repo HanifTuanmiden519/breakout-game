@@ -413,7 +413,10 @@ class BreakoutGame(Widget):
         self.level = 1
         self.score = 0
         self.lives = 3
-        self.setup_game()
+        self.game_started = False  # Reset game started flag
+        self.running = True  # Make sure the game is running
+        self.setup_game()  # Reset game state
+        Clock.schedule_interval(self.update, 1/60)  # Start game loop again
 
     def show_game_over_message(self):
         game_over_label = Label(
