@@ -144,7 +144,12 @@ class BreakoutGame(Widget):
         return super().on_touch_down(touch)
 
     def update(self, dt):
-        if not self.running or self.paused or not self.game_started:  # Check if the game has started
+        if not self.running or self.paused:  # Check if the game is running and not paused
+            return
+
+        if not self.game_started:
+            # Move the ball with the paddle if the game has not started
+            self.ball.pos = (self.paddle.pos[0] + self.paddle.size[0] / 2 - 10, self.paddle.pos[1] + 20)
             return
 
         self.ball.pos = (self.ball.pos[0] + self.dx, self.ball.pos[1] + self.dy)
