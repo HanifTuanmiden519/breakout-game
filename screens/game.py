@@ -423,6 +423,22 @@ class BreakoutGame(Widget):
         
             # ตั้งเวลาให้กลับสู่ความเร็วปกติหลัง 5 วินาที
             Clock.schedule_once(self.reset_speed, 5)
+
+    def reset_speed(self, dt):
+        if hasattr(self, "original_dx"):
+            # คืนค่าความเร็วลูกบอลหลัก
+            self.dx = self.original_dx
+            self.dy = self.original_dy
+        
+            # คืนค่าความเร็วลูกบอลเสริม
+            for i, extra in enumerate(self.extra_balls):
+                if i < len(self.original_extra_speeds):
+                    extra["dx"], extra["dy"] = self.original_extra_speeds[i]
+        
+            # ลบตัวแปรที่เก็บค่าความเร็วเดิม
+            del self.original_dx
+            del self.original_dy
+            del self.original_extra_speeds
     
     def create_extra_ball(self):
         new_ball = Ellipse(size=(20, 20), pos=self.ball.pos)
