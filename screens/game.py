@@ -34,13 +34,6 @@ class GameScreen(Screen):
         self.game_widget = BreakoutGame(self)
         self.add_widget(self.game_widget)
 
-        # Add timer label
-        self.timer_label = Label(
-            text="Time: 3:00",
-            size_hint=(None, None), size=(150, 30),
-            pos_hint={"right": 0.8, "top": 1}
-        )
-
         # UI elements with dynamic positioning
         self.score_label = Label(
             text="Score: 0",
@@ -63,7 +56,6 @@ class GameScreen(Screen):
         self.add_widget(self.score_label)
         self.add_widget(self.lives_label)
         self.add_widget(self.back_button)
-        self.add_widget(self.timer_label)
 
         Window.bind(on_resize=self.update_ui_positions)
 
@@ -542,13 +534,3 @@ class BreakoutGame(Widget):
         dx = (self.original_dx if hasattr(self, "original_dx") else self.dx) * choice([-1, 1]) * uniform(0.8, 1.2)
         dy = abs(self.original_dy if hasattr(self, "original_dy") else self.dy)
         self.extra_balls.append({"ball": new_ball, "dx": dx, "dy": dy})
-
-    def setup_time_trial(self):
-        self.time_remaining = 180  # 3 minutes
-        Clock.schedule_interval(self.update_timer, 1)
-
-    def update_timer(self, dt):
-        if self.time_remaining > 0:
-            self.time_remaining -= 1
-        else:
-            self.end_game()
