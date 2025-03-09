@@ -297,7 +297,7 @@ class BreakoutGame(Widget):
                     
                     # 🔥 สุ่มโอกาสดรอปไอเทม 30%
                     if randint(1, 100) <= 30:
-                        powerup = PowerUp(block_rect.pos[0], block_rect.pos[1], choice(["expand_paddle", "extra_ball", "speed_up"]))
+                        powerup = PowerUp(block_rect.pos[0], block_rect.pos[1], choice(["expand_paddle", "extra_ball", "speed_up", "slow_down"]))  # เพิ่ม "slow_down"
                         self.add_widget(powerup.image)
                         self.powerups.append(powerup)
                 else:
